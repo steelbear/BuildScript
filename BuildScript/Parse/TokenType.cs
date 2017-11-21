@@ -19,18 +19,17 @@
         ElseIf,            // elseif
         False,             // false
         For,               // for
-        Function,          // function
         Global,            // global
         If,                // if
         In,                // in
         Match,             // match
         Not,               // not
-        Or,                // or
         Project,           // project
         Raise,             // raise
         Repeat,            // repeat
         Return,            // return
         Target,            // target
+        Task,              // task
         True,              // true
         Undefined,         // undefined
         Until,             // until
