@@ -19,7 +19,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Document", "Document", "{65
 	ProjectSection(SolutionItems) = preProject
 		LICENSE = LICENSE
 		README.md = README.md
-		Specification.md = Specification.md
+		Documents\Apis.md = Documents\Apis.md
+		Documents\Concepts.md = Documents\Concepts.md
+		Documents\Grammars.md = Documents\Grammars.md
+		Documents\Index.md = Documents\Index.md
 	EndProjectSection
 EndProject
 Global

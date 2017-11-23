@@ -1,6 +1,6 @@
-﻿/*
- * Location.cs
- * author: numver8638(numver8638@naver.com)
+/*
+ * <filename>.cs
+ * author: <author>
  *
  * This file is part of BuildScript.
  *
@@ -29,18 +29,3 @@
  * 
  * For more information, please refer to <http://unlicense.org>
  */
-namespace BuildScript.AST
-{
-    public struct Location
-    {
-        public readonly int Line, Column;
-
-        internal Location(int line, int column)
-        {
-            Line = line;
-            Column = column;
-        }
-
-        public override string ToString() => "Line: " + Line + ", Column: " + Column;
-    }
-}
