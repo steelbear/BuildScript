@@ -38,10 +38,10 @@ using static BuildScript.Util.Checker;
 
 namespace BuildScript.Parse
 {
-    public class Parser
+    public partial class Parser
     {
         private Lexer lexer;
-        private Script script;
+        private AST.Script script;
         private Token current;
 
         public Parser(SourceText source)
@@ -51,9 +51,9 @@ namespace BuildScript.Parse
             lexer = new Lexer(source);
         }
 
-        public Script ParseScript()
+        public AST.Script ParseScript()
         {
-            script = new Script();
+            script = new AST.Script();
 
             ParseScriptRoot();
 
@@ -91,13 +91,56 @@ namespace BuildScript.Parse
             ConsumeToken(); // load first token
 
             do
-                ParseScriptElement();
-            while (current.Type != TokenType.EOF);
+            {
+                // ParseScriptElement();
+                Console.WriteLine(current);
+                ConsumeToken();
+
+           } while (current.Type != TokenType.EOF);
         }
 
+        /*
+         * script_element
+         *     : declaration
+         *     | import_statement
+         *     | statement
+         *     ;
+         */
         private void ParseScriptElement()
         {
-            
+            switch (current.Type)
+            {
+                /*
+                 * Declarations
+                 */
+                case TokenType.Project:
+                    break;
+
+                case TokenType.Global:
+                    break;
+
+                case TokenType.Target:
+
+                    break;
+
+                case TokenType.Task:
+
+                    break;
+
+                /*
+                 * Import statement
+                 */
+                case TokenType.Import:
+
+                    break;
+
+                /*
+                 * Statements
+                 */
+                default:
+
+                    break;
+            }
         }
     }
 }

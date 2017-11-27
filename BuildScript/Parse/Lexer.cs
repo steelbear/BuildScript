@@ -51,6 +51,7 @@ namespace BuildScript.Parse
                 { "for",       TokenType.For       },
                 { "global",    TokenType.Global    },
                 { "if",        TokenType.If        },
+                { "import",    TokenType.Import    },
                 { "in",        TokenType.In        },
                 { "match",     TokenType.Match     },
                 { "not",       TokenType.Not       },
@@ -82,7 +83,6 @@ namespace BuildScript.Parse
 
         internal Token LexToken()
         {
-            Retry:
             if (isNewLine)
             {
                 ++line;
@@ -91,6 +91,12 @@ namespace BuildScript.Parse
             }
 
             SkipWhitespace();
+
+            // Ignore comments
+            if (AdvanceIfDesired('#'))
+            {
+                SkipUntilEOL();
+            }
 
             if (source.Length <= cursor)
             {
@@ -103,9 +109,75 @@ namespace BuildScript.Parse
 
             if (IsIdentifier(ch)) return LexIdentifierOrKeyword();
 
+            /* else */ return LexPunctuator();
+        }
+
+        private Token LexInteger()
+        {
             var location = GetLocation();
-            var type = TokenType.Unknown;
-            ++cursor; // eat character
+            var start = cursor++;
+            string image;
+
+            if (source[start] == '0')
+            {
+                if (AdvanceIfDesired('x') || AdvanceIfDesired('X'))
+                {
+                    while (source.Length > cursor && IsHexadecimal(source[cursor])) ++cursor;
+
+                    image = source.GetString(start, cursor - start);
+                    return new Token(location, TokenType.Integer, image);
+                }
+            }
+
+            while (source.Length > cursor && IsDecimal(source[cursor])) ++cursor;
+
+            image = source.GetString(start, cursor - start);
+            return new Token(location, TokenType.Integer, image);
+        }
+
+        private Token LexIdentifierOrKeyword()
+        {
+            var location = GetLocation();
+            var start = cursor++;
+
+            while (source.Length > cursor && IsIdentifier(source[cursor])) ++cursor;
+
+            var image = source.GetString(start, cursor - start);
+            
+            if (!Keywords.TryGetValue(image, out TokenType type))
+            {
+                type = TokenType.Identifier;
+            }
+
+            return new Token(location, type, image);
+        }
+
+        private Token LexString(char startChar)
+        {
+            var location = GetLocation();
+            var type = startChar == '"' ? TokenType.InterpolatedString : TokenType.String;
+            var start = cursor;
+
+            do
+            {
+                ++cursor;
+
+                if (source.Length <= cursor || IsEOL(source[cursor]))
+                    return new Token(GetLocation(), TokenType.Unknown);
+
+            } while (source[cursor] != startChar);
+
+            var image = source.GetString(start, cursor - start);
+            ++cursor; // eat startChar
+
+            return new Token(location, type, image);
+        }
+
+        private Token LexPunctuator()
+        {
+            var location = GetLocation();
+            var ch = source[cursor++ /* accept current character */];
+            var type = TokenType.Undefined;
 
             switch (ch)
             {
@@ -195,10 +267,6 @@ namespace BuildScript.Parse
                 case '"':
                     return LexString(ch);
 
-                case '#': // comment
-                    SkipUntilEOL();
-                    goto Retry;
-
                 default:
                     // type = TokenType.Unknown
                     break;
@@ -207,57 +275,9 @@ namespace BuildScript.Parse
             return new Token(location, type);
         }
 
-        private Token LexInteger()
-        {
-            var location = GetLocation();
-            var start = cursor++;
-
-            while (source.Length > cursor && IsDecimal(source[cursor])) ++cursor;
-
-            return new Token(location, TokenType.Integer, source.GetString(start, cursor - start));
-        }
-
-        private Token LexIdentifierOrKeyword()
-        {
-            var location = GetLocation();
-            var start = cursor++;
-
-            while (source.Length > cursor && IsIdentifier(source[cursor])) ++cursor;
-
-            var image = source.GetString(start, cursor - start);
-            
-            if (!Keywords.TryGetValue(image, out TokenType type))
-            {
-                type = TokenType.Identifier;
-            }
-
-            return new Token(location, type, image);
-        }
-
-        private Token LexString(char startChar)
-        {
-            var location = GetLocation();
-            var type = startChar == '"' ? TokenType.InterpolatedString : TokenType.String;
-            var start = cursor;
-
-            do
-            {
-                ++cursor;
-
-                if (source.Length <= cursor || IsEOL(source[cursor]))
-                    return new Token(GetLocation(), TokenType.Unknown);
-
-            } while (source[cursor] != startChar);
-
-            var image = source.GetString(start, cursor - start);
-            ++cursor; // eat startChar
-
-            return new Token(location, type, image);
-        }
-
         private bool AdvanceIfDesired(char desired)
         {
-            if (source[cursor] == desired)
+            if (source.Length > cursor && source[cursor] == desired)
             {
                 ++cursor;
                 return true;
@@ -289,6 +309,8 @@ namespace BuildScript.Parse
         private static bool IsWhitespace(char ch) => (ch == ' ') || (ch == '\t');
 
         private static bool IsDecimal(char ch) => ('0' <= ch) && (ch <= '9');
+
+        private static bool IsHexadecimal(char ch) => ('a' <= ch && ch <= 'f') || ('A' <= ch && ch <= 'F') || IsDecimal(ch);
 
         private static bool IsIdentifier(char ch) 
             => ('a' <= ch && ch <= 'z') || ('A' <= ch && ch <= 'Z') || (ch == '_') || (ch == '$') || IsDecimal(ch);

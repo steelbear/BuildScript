@@ -45,9 +45,13 @@
     <Compile Include="AST\Location.cs" />
     <Compile Include="Parse\Lexer.cs" />
     <Compile Include="Parse\Parser.cs" />
+    <Compile Include="Parse\Parser`Expr.cs" />
+    <Compile Include="Parse\Parser`Stmt.cs" />
     <Compile Include="Parse\Token.cs" />
     <Compile Include="Parse\TokenType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Script\ITask.cs" />
+    <Compile Include="Script\ScriptContext.cs" />
     <Compile Include="Util\Checker.cs" />
     <Compile Include="Util\SourceText.cs" />
     <Compile Include="Parse\ParserException.cs" />

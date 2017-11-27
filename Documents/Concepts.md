@@ -56,6 +56,8 @@ global {
 전역 객체 블록 안에는 변수 선언 뿐만 아니라 다른 문(Statement)도 올 수 있습니다. 문(Statement)에 대한 자세한 사항은 [여기](Concepts.md#statements)에서 확인 할 수 있습니다.
 
 ## Projects
+프로젝트(Project) 객체는 
+
 작성 형태는 다음과 같습니다:
 ```
 project ProjectName {
@@ -64,20 +66,60 @@ project ProjectName {
 ```
 
 ## Targets
+타겟(Target)은 빌드에 필요한 일련의 작업(태스크)들을 그룹화하고 빌드 과정을 정의하는 작은 단위입니다. 타겟은 스크립트 최상위 항목으로도, 프로젝트의 하위 항목으로도 정의 될 수 있습니다. 단, 프로젝트의 하위 항목으로 정의될 경우 그 프로젝트의 빌드 과정에서만 접근 가능하며 다른 같은 이름의 타겟보다 우선시 됩니다.
+
 작성 형태는 다음과 같습니다:
 ```
 target TargetName {
     ...
 }
 ```
+<!--
+### 의존성 설정
+타겟이 실행되기 위해 사전에 먼저 실행되어야할 타겟이 있을 수 있습니다. 이런 경우에는 `dependsOn` 메서드로 타겟간 의존성 설정이 가능합니다.
 
+작성 형태는 다음과 같습니다:
+```
+target Target {
+    ...
+    dependsOn ['FirstTarget', 'SecondTarget'] # 개별로 입력하는 경우
+    dependsOn project.afterBuild              # 다른 변수/프로퍼티로 입력하는 경우
+    ...
+}
+```
+
+### 입력 파일 설정
+소스코드를 컴파일하는 것처럼 의존성이 다른 타겟이 아니라 파일에 의존성이 있을 수 있습니다. 이런 경우에는 `input` 메서드로 파일 의존성을 설정할 수 있습니다. 
+
+작성 형태는 다음과 같습니다:
+```
+target Target {
+    ...
+    input ['source1.c', 'source2.c', 'source3.c'] # 개별 파일로 입력하는 경우
+    input project.sources.endsWith('.cpp')        # 다른 변수/프로퍼티로 입력하는 경우
+    ...
+}
+```
+
+### 액션(Action) 설정
+
+-->
 ## Tasks
+태스크(Task)는 빌드 과정에 필요한 작업(일)을 정의합니다. 사용자가 다른 태스크들을 이용하여 새로운 태스크를 정의할 수 있으며, BuildScript내 `ITask` 인터페이스를 구현함으로서도 새로운 태스크를 정의할 수 있습니다.
+
+`ITask` 인터페이스를 이용하여 새로운 태스크를 구현하는 방법에 대해 자세한 사항은 [여기](Apis.md)에서 확인 할 수 있습니다.
+
 작성 형태는 다음과 같습니다:
 ```
 task TaskName(Argument1, Argument2, ...) {
     ...
 }
 ```
+
+`importTasks` 메서드를 이용하여 태스크를 구현하는 어셈블리를 로드하여 사용할 수 있습니다. 첫번째 인자는 태스크를 구현하는 어셈블리의 경로이며 두번째 인자는 태스크를 구현하는 네임스페이스의 리스트입니다. BuildScript는 네임스페이스를 검색하여 `ITask`를 구현하는 클래스를 발견하면 그 클래스를 사용가능한 태스크의 목록에 포함시킵니다.
+```
+importTasks("MyTasks.dll", ["MyNamespace.MyTasks", "MyNamespace2.AnotherTasks"])
+``` 
 
 ## Statements
 문(Statement)은 스크립트의 행동을 표현하는 문장입니다. BuildScript에서는 아래 종류의 문이 있습니다.
@@ -189,16 +231,16 @@ import listOfScripts
 | Relational     | `x in y`     | `x`가 `y`에 포함되어있는지 평가합니다.                   |
 |                | `x not in y` | `x`가 `y`에 포함되어있자 않은지 평가합니다.              |
 | Logical AND    | `x && y`     | 논리 곱 연산 - `x`가 참일 경우에만 `y`를 평가합니다.     |
-| Logical OR     | `x || y`     | 논리 합 연산 - `x`가 거짓일 경우에만  `y` 를 평가합니다. |
+| Logical OR     | `x \|\| y`     | 논리 합 연산 - `x`가 거짓일 경우에만  `y` 를 평가합니다. |
 | Assignment     | `x op= y`    | 대입 연산 (`=`, `+=`, `:=`)                              |
 | Closure        | `{ x -> y }` | 익명 함수 객체(클로저)                                   |
 
 ## Variables and properties
 
 ### Variables
-변수는 값을 읽고 쓰기위해 지정한 메모리 주소의 이름입니다.
+변수는 값을 읽고 쓰기위해 지정한 저장 공간의 이름입니다.
 
-BuildScript에서는 변수는 대입시 생성되면서 대입되는 값으로 초기화되거나 변수 선언문에서(대입 초기화를 하지 않을 시) 빈 문자열 타입으로 초기화됩니다.
+BuildScript에서는 변수는 대입시 생성되면서 대입되는 값으로 초기화되거나 변수 선언문에서(대입 초기화를 하지 않을 시) 빈 리스트 타입으로 초기화됩니다.
 
 ### Properties
 프로퍼티(Property)는 객체의 속성에 접근하게 하는 읽기 전용 변수입니다.

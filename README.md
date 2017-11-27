@@ -1,5 +1,5 @@
 # BuildScript
-Script based build engine inspired from [MSBuild](https://docs.microsoft.com/ko-kr/visualstudio/msbuild/msbuild) and [Gradle](https://gradle.org).
+Script based build engine inspired from [MSBuild](https://docs.microsoft.com/en-us/visualstudio/msbuild/msbuild) and [Gradle](https://gradle.org).
 
 ## TODOs
 - [ ] Write specification.
