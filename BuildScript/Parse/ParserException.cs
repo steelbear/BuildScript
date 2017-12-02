@@ -1,4 +1,4 @@
-﻿/*
+/*
  * ParserException.cs
  * author: numver8638(numver8638@naver.com)
  *

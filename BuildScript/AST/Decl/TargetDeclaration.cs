@@ -1,5 +1,6 @@
 /*
- * SourceText.cs
+ * TargetDeclaration.cs
+ * author: numver8638(numver8638@naver.com)
  *
  * This file is part of BuildScript.
  *
@@ -28,52 +29,19 @@
  * 
  * For more information, please refer to <http://unlicense.org>
  */
-using System.IO;
-
-using static BuildScript.Util.Checker;
-
-namespace BuildScript.Util
+namespace BuildScript.AST
 {
-    public class SourceText
+    public class TargetDeclaration : Declaration
     {
-        private string filename;
-        private char[] buffer;
-
-        public SourceText(FileInfo file)
+        internal TargetDeclaration(Location location)
+            : base(location)
         {
-            CheckNull(file, nameof(file));
 
-            using (var reader = file.OpenText())
-            {
-                buffer = reader.ReadToEnd().ToCharArray();
-            }
-
-            filename = file.Name;
         }
 
-        public SourceText(string source)
+        public override void Dump()
         {
-            CheckNull(source, nameof(source));
-
-            buffer = source.ToCharArray();
-            filename = "<internal>";
+            throw new System.NotImplementedException();
         }
-
-        public int Length
-        {
-            get => buffer.Length;
-        }
-
-        public char this[int index]
-        {
-            get => buffer[index];
-        }
-
-        public string FileName
-        {
-            get => filename;
-        }
-
-        public string GetString(int start, int length) => new string(buffer, start, length);
     }
 }

@@ -1,5 +1,5 @@
-﻿/*
- * ITask.cs
+/*
+ * Parser`Decl.cs
  * author: numver8638(numver8638@naver.com)
  *
  * This file is part of BuildScript.
@@ -29,9 +29,35 @@
  * 
  * For more information, please refer to <http://unlicense.org>
  */
-namespace BuildScript.Script
+using System.Diagnostics;
+
+using BuildScript.AST;
+
+namespace BuildScript.Parse
 {
-    public interface ITask
+    public partial class Parser
     {
+        private GlobalDeclaration ParseGlobalDeclaration()
+        {
+            Debug.Assert(current.Type == TokenType.Global);
+
+            
+
+            return null;
+        }
+
+        private TargetDeclaration ParseTargetDeclaration()
+        {
+            Debug.Assert(current.Type == TokenType.Target);
+
+            return null;
+        }
+
+        private TaskDeclaration ParseTaskDeclaration()
+        {
+            Debug.Assert(current.Type == TokenType.Task);
+
+            return null;
+        }
     }
 }

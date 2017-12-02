@@ -98,9 +98,9 @@ keyword
     : 'break'     | 'case'      | 'default'   | 'else'
     | 'elseif'    | 'false'     | 'for'       | 'global'
     | 'if'        | 'import'    | 'in'        | 'match'
-    | 'not'       | 'project'   | 'raise'     | 'repeat'
-    | 'return'    | 'target'    | 'task'      | 'true'
-    | 'undefined' | 'until'     | 'var'       | 'while'
+    | 'not'       | 'raise'     | 'return'    | 'target'    
+    | 'task'      | 'true'      | 'undefined' | 'var'       
+    | 'while'
     ;
 ```
 
@@ -143,9 +143,9 @@ BuildScript에서는 숫자 리터럴을 지원하지만 정수에 대한 연산
 
 "정의되지 않음" 리터럴은 변수나 프로퍼티에 없는 멤버의 참조나 반환값이 없는 클로저나 태스크가 반환하는 "정의되지 않음"을 표현하는 리터럴입니다. "정의되지 않음"에 대한 자세한 사항은 [여기](Concepts.md#undefined)에서 확인 할 수 있습니다. 
 
-보간 문자열은 일반 문자열과 비슷하지만 중간에 식(Expression)이 포함될 수 있는 문자열입니다. 문자열 안에서 `#{`와 `}` 사이에 식이 들어갑니다. 문자열 내의 식은 구문분석 과정에서 토큰으로 쪼개지고 분석되며 이 과정에서 올바르지 않은 식이 나타날경우 오류가 발생합니다.
+보간 문자열은 일반 문자열과 비슷하지만 중간에 식(Expression)이 포함될 수 있는 문자열입니다. 문자열 안에서 `${`와 `}` 사이에 식이 들어갑니다. 문자열 내의 식은 구문분석 과정에서 토큰으로 쪼개지고 분석되며 이 과정에서 올바르지 않은 식이 나타날경우 오류가 발생합니다.
 
-보간 문자열에서 `}`은 `#{`가 선행에 있었을 때 닫는 괄호로 인식됩니다. 따라서 `}`기호를 출력하기 위해 다른 작업이 필요하지 않습니다. 하지만 문자열 내에서 `#{`은 식이 포함되는 구간임을 알리는 기호이므로 이 기호열을 사용하기 위해서는 `'\#{'`와 같이 표현해야합니다.
+보간 문자열에서 `}`은 `${`가 선행에 있었을 때 닫는 괄호로 인식됩니다. 따라서 `}`기호를 출력하기 위해 다른 작업이 필요하지 않습니다. 하지만 문자열 내에서 `${`은 식이 포함되는 구간임을 알리는 기호이므로 이 기호열을 사용하기 위해서는 `'\${'`와 같이 표현해야합니다.
 
 예:
 ```
@@ -203,12 +203,12 @@ interpolated_string_literal
 interpolated_string_character
     : '<new_line과 expression_promoter, \"(U+0022), \\(U+005C)을 제외한 아무 문자>'
     | escape_sequence
-    | '\\#'
+    | '\\$'
     | expression_promoter expression '}'
     ;
 
 expression_promoter
-    : '#{'
+    : '${'
     ;
 
 boolean_literal
@@ -297,7 +297,6 @@ postfix_expression
     | postfix_expression '(' expression_list? ')'  // invocation_expression
     | postfix_expression expression_list           // invocation_expression
     | postfix_expression '.' identifier            // member_access_expression
-    | 'project' '.' identifier                     // project_access_expression
     | 'global' '.' identifier                      // global_access_expression
     ;
 
@@ -370,7 +369,7 @@ logical_or_expression
 * 추가 연산 : `+=` 연산자로 표현하며 기존 값의 타입이 리스트라면 값의 추가를, 리스트 타입이 아닐경우 값을 보존한 상태로 리스트 타입으로 변환 한 뒤 추가됩니다. 단, 클로저 타입일경우 런타임 예외가 발생합니다.
 * 조건부 대입 연산 : `:=` 연산자로 표현하며 변수가 비어있는 경우(혹은 변수가 정의되지 않은 경우) 값이 대입됩니다.
 
-모든 대입 연산에는 값 조건 식(Value-conditional expression)을 사용 할 수 있습니다. 이 식은 `:` 을 기준으로 왼쪽 식의 반환값이 `undefined`일 경우 오른쪽 식의 값을 반환하고 아닌경우 왼쪽 식의 값을 반환하는 특수 식 입니다. C#의 Null-coaleasing expression과 비슷합니다.
+모든 대입 연산에는 값 조건 식(Value-conditional expression)을 사용 할 수 있습니다. 이 식은 `?` 을 기준으로 왼쪽 식의 반환값이 `undefined`일 경우 오른쪽 식의 값을 반환하고 아닌경우 왼쪽 식의 값을 반환하는 특수 식 입니다. C#의 Null-coaleasing expression과 비슷합니다.
 
 ```antlr
 assignment_expression
@@ -382,7 +381,7 @@ assignment_operator
     ;
 
 value_conditional_expression
-    : expression (':' expression)?
+    : expression ('?' expression)?
     ;
 ```
 
@@ -429,7 +428,6 @@ statement
     | match_statement
     | for_statement
     | while_statement
-    | repeat_statement
     | break_statement
     | return_statement
     | raise_statement
@@ -520,24 +518,11 @@ while_statement
     ;
 ```
 
-### `repeat` statement
-식의 조건이 참일 경우일동안 반복하는 반복문 입니다. `while`문과 달리 블록을 실행한 뒤 조건을 평가합니다.
-
-제약사항:
-* `repeat`문 안에 포함된 `condition`에 사용된 식의 반환값은 논리 타입의 값만 허용됩니다.
-
-```antlr
-repeat_statement
-    : 'repeat' block 'until' condition
-    ;
-```
-
-
 ### `break` statement
 현재 실행되고 있는 반복문의 실행을 중지하는 문 입니다. `break`문에는 일반 `break`문과 조건 `break`문이 있습니다. 조건 `break`문은 식의 조건이 참일 경우에만 실행됩니다.
 
 제약사항:
-* `break`문은 반복문(`for`문, `while`문, `repeat`문)에서만 사용 가능합니다.
+* `break`문은 반복문(`for`문, `while`문)에서만 사용 가능합니다.
 * 조건 `break`문에 사용되는 식의 반환값은 논리 타입의 값만 허용됩니다.
 
 ```antlr
@@ -614,6 +599,14 @@ expression_statement
 ## Declarations
 선언(Declaration)
 
+```antlr
+declaration
+    : global_declaration
+    | target_declaration
+    | task_declaration
+    ;
+```
+
 ### `global` declaration
 전역적으로 참조할 변수들을 정의할 수 있는 선언문 입니다.
 
@@ -623,27 +616,6 @@ expression_statement
 ```antlr
 global_declaration
     : 'global' block
-    ;
-```
-
-### `project` declaration
-프로젝트 객체를 정의하는 선언문 입니다.
-
-제약사항:
-* 하나의 스크립트 내에서 (`import`된 스크립트까지 포함) 프로젝트 객체의 선언은 한번만 허용됩니다.
-
-```antlr
-project_declaration
-    : 'project' identifier project_body
-    ;
-
-project_body
-    : '{' project_element* '}'
-
-project_element
-    : statement
-    | target_declaration
-    | task_declaration
     ;
 ```
 

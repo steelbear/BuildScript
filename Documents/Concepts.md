@@ -32,11 +32,7 @@ For more information, please refer to <http://unlicense.org>
 
 Concepts
 =======================================
-BuildScript는 [MSBuild](https://docs.microsoft.com/ko-kr/visualstudio/msbuild/msbuild)와 [Gradle](https://gradle.org)의 영향을 받아 제작된 스크립트 기반 빌드 프로그램 입니다. 문법 구조는 C-like 언어들의 문법을 일부 변형하여 설계되었고, 프로젝트나 타겟, 태스크 등의 개념은 MSBuild의 기반으로 작성되었습니다.
-
-BuildScript에서의 핵심 컨셉은 __프로젝트(Project), 타겟(Target), 태스크(Task)__ 입니다.
-
-스크립트는 프로젝트와 타겟, 태스크들의 선언과 문의 집합으로 구성되어있으며 프로젝트는 다시 타겟과 태스크들의 선언, 실행가능한 문들의 집합으로 구성되어있습니다. 
+BuildScript는 [MSBuild](https://docs.microsoft.com/ko-kr/visualstudio/msbuild/msbuild)와 [Gradle](https://gradle.org)의 영향을 받아 제작된 스크립트 기반 빌드 프로그램 입니다.
 
 ## Globals
 전역(Global) 객체는 BuildScript 실행주기동안 스크립트 전역에서 접근할 수 있는 객체입니다. 전역 객체가 선언된 프로젝트(혹은 스크립트)의 하위 프로젝트 전체에서 그 전역객체를 상속받아 사용할 수 있습니다.
@@ -51,22 +47,15 @@ global {
 }
 ```
 
-전역 객체 내부에서 선언된 변수들은 전역 객체의 프로퍼티 참조로서 이용할 수 있습니다.(위를 예를들면 `global.value` 와 같은 형태) 프로퍼티 참조에 대한 자세한 사항은 [여기](Concepts.md#properties)에서 확인 할 수 있습니다.
+전역 객체 내부에서 선언된 변수들은 전역 객체의 프로퍼티 참조로서 이용할 수 있습니다.(위로 예를들면 `global.value` 와 같은 형태) 프로퍼티 참조에 대한 자세한 사항은 [여기](Concepts.md#properties)에서 확인 할 수 있습니다.
 
 전역 객체 블록 안에는 변수 선언 뿐만 아니라 다른 문(Statement)도 올 수 있습니다. 문(Statement)에 대한 자세한 사항은 [여기](Concepts.md#statements)에서 확인 할 수 있습니다.
 
 ## Projects
-프로젝트(Project) 객체는 
-
-작성 형태는 다음과 같습니다:
-```
-project ProjectName {
-    ...
-}
-```
+TBD
 
 ## Targets
-타겟(Target)은 빌드에 필요한 일련의 작업(태스크)들을 그룹화하고 빌드 과정을 정의하는 작은 단위입니다. 타겟은 스크립트 최상위 항목으로도, 프로젝트의 하위 항목으로도 정의 될 수 있습니다. 단, 프로젝트의 하위 항목으로 정의될 경우 그 프로젝트의 빌드 과정에서만 접근 가능하며 다른 같은 이름의 타겟보다 우선시 됩니다.
+타겟(Target)은 빌드에 필요한 일련의 작업(태스크)들을 그룹화하고 빌드 과정을 정의하는 작은 단위입니다. 타겟도 일종의 객체로서 취급되며 블록 내의 내용이 타겟 객체를 설정하는 역할을 합니다.
 
 작성 형태는 다음과 같습니다:
 ```
@@ -74,7 +63,7 @@ target TargetName {
     ...
 }
 ```
-<!--
+
 ### 의존성 설정
 타겟이 실행되기 위해 사전에 먼저 실행되어야할 타겟이 있을 수 있습니다. 이런 경우에는 `dependsOn` 메서드로 타겟간 의존성 설정이 가능합니다.
 
@@ -82,12 +71,12 @@ target TargetName {
 ```
 target Target {
     ...
-    dependsOn ['FirstTarget', 'SecondTarget'] # 개별로 입력하는 경우
-    dependsOn project.afterBuild              # 다른 변수/프로퍼티로 입력하는 경우
+    dependsOn ['FirstTarget', 'SecondTarget']
     ...
 }
 ```
 
+<!--
 ### 입력 파일 설정
 소스코드를 컴파일하는 것처럼 의존성이 다른 타겟이 아니라 파일에 의존성이 있을 수 있습니다. 이런 경우에는 `input` 메서드로 파일 의존성을 설정할 수 있습니다. 
 
@@ -107,7 +96,7 @@ target Target {
 ## Tasks
 태스크(Task)는 빌드 과정에 필요한 작업(일)을 정의합니다. 사용자가 다른 태스크들을 이용하여 새로운 태스크를 정의할 수 있으며, BuildScript내 `ITask` 인터페이스를 구현함으로서도 새로운 태스크를 정의할 수 있습니다.
 
-`ITask` 인터페이스를 이용하여 새로운 태스크를 구현하는 방법에 대해 자세한 사항은 [여기](Apis.md)에서 확인 할 수 있습니다.
+`ITask` 인터페이스를 이용하여 새로운 태스크를 구현하는 방법에 대해 자세한 사항은 [여기](#)에서 확인 할 수 있습니다.
 
 작성 형태는 다음과 같습니다:
 ```
@@ -164,7 +153,7 @@ match (value) {
 #### `for` statement
 ```
 for (value in list) {
-    print "#{value} is contained in list"
+    print "${value} is contained in list"
 }
 ```
 
@@ -173,13 +162,6 @@ for (value in list) {
 while (...) {
     ...
 }
-```
-
-#### `repeat` statement
-```
-repeat {
-    ...
-} until (...)
 ```
 
 #### `raise` statement
@@ -243,7 +225,7 @@ import listOfScripts
 BuildScript에서는 변수는 대입시 생성되면서 대입되는 값으로 초기화되거나 변수 선언문에서(대입 초기화를 하지 않을 시) 빈 리스트 타입으로 초기화됩니다.
 
 ### Properties
-프로퍼티(Property)는 객체의 속성에 접근하게 하는 읽기 전용 변수입니다.
+TBD
 
 ## Types
 BuildScript의 타입구조에는 문자열(String), 리스트(List), 논리(Boolean) 그리고 클로저(Closure) 4가지의 타입과 "정의되지 않음"(Undefined)이 존재합니다.
@@ -252,7 +234,7 @@ BuildScript의 타입구조에는 문자열(String), 리스트(List), 논리(Boo
 문자열(String) 타입은 문자열을 저장하는 타입입니다. BuildScript내에서 가장 기본적이고 자주 이용되는 타입입니다.
 
 ### List
-리스트(List) 타입은 문자열들을 저장하는 컨테이너 타입입니다. 리스트에 저장되는 모든 값은 문자열 타입으로 저장됩니다. 단 클로저 타입은 런타임 예외가 발생합니다.(함수를 문자화 할 수 없음)
+리스트(List) 타입은 문자열들을 저장하는 컨테이너 타입입니다. 리스트에 저장되는 모든 값은 문자열 타입으로 저장됩니다. 단, 클로저 타입은 제외됩니다.
 
 ### Boolean
 논리(Boolean) 타입은 참(True)과 거짓(False)를 지정하는 타입입니다. 이와 대응되는 논리 리터럴로 각각 `true`와 `false`가 있습니다. 조건문이나 반복문에서 문의 실행 여부를 판단할 때, 혹은 참 또는 거짓을 표현할 때 사용하는 타입입니다.

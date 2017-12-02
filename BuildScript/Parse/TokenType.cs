@@ -1,4 +1,4 @@
-﻿/*
+/*
  * TokenType.cs
  * author: numver8638(numver8638@naver.com)
  *
@@ -40,7 +40,7 @@ namespace BuildScript.Parse
         Identifier,        // identifier
         Integer,           // 123, 0x123
         String,            // 'string'
-        InterpolatedString,// "#{interpolated} string"
+        InterpolatedString,// "${interpolated} string"
 
         // Keywords
         Break,             // break
@@ -56,15 +56,12 @@ namespace BuildScript.Parse
         Import,            // import
         Match,             // match
         Not,               // not
-        Project,           // project
         Raise,             // raise
-        Repeat,            // repeat
         Return,            // return
         Target,            // target
         Task,              // task
         True,              // true
         Undefined,         // undefined
-        Until,             // until
         Var,               // var
         While,             // while
 

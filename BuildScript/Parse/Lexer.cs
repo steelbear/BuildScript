@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Lexer.cs
  * author: numver8638(numver8638@naver.com)
  *
@@ -55,15 +55,12 @@ namespace BuildScript.Parse
                 { "in",        TokenType.In        },
                 { "match",     TokenType.Match     },
                 { "not",       TokenType.Not       },
-                { "project",   TokenType.Project   },
                 { "raise",     TokenType.Raise     },
-                { "repeat",    TokenType.Repeat    },
                 { "return",    TokenType.Return    },
                 { "target",    TokenType.Target    },
                 { "task",      TokenType.Task      },
                 { "true",      TokenType.True      },
                 { "undefined", TokenType.Undefined },
-                { "until",     TokenType.Until     },
                 { "var",       TokenType.Var       },
                 { "while",     TokenType.While     }
             };
@@ -286,10 +283,7 @@ namespace BuildScript.Parse
             return false;
         }
 
-        private Location GetLocation()
-        {
-            return new Location(line, (cursor - lineStart) + 1);
-        }
+        private Location GetLocation() => new Location(line, (cursor - lineStart) + 1);
 
         private void SkipWhitespace()
         {

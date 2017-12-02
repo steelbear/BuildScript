@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Checker.cs
  *
  * This file is part of BuildScript.
